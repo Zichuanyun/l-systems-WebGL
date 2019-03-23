@@ -7,6 +7,7 @@ import OpenGLRenderer from './rendering/gl/OpenGLRenderer';
 import Camera from './Camera';
 import {setGL} from './globals';
 import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
+import LSystem from './lsystem/LSystem'
 
 // Define an object with application parameters and button callbacks
 // This will be referred to by dat.GUI's functions that add GUI elements.
@@ -16,6 +17,7 @@ const controls = {
 let square: Square;
 let screenQuad: ScreenQuad;
 let time: number = 0.0;
+let lsystem: LSystem = new LSystem("F-F-F", 3);
 
 function loadScene() {
   square = new Square();
