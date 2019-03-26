@@ -51,7 +51,6 @@ function rotX() {
 
 function rotY() {
   this.turtle.rotYDeg(this.yRot);
-
 }
 
 function rotZ() {
@@ -68,12 +67,8 @@ function goForward() {
   this.rotArray.push(this.turtle.forward[1]);
   this.rotArray.push(this.turtle.forward[2]);
 
-  let curScale: number = Math.pow(this.scalingFactor, this.turtle.depth);
-  this.scaleArray.push(curScale);
-  this.scaleArray.push(1);
-  this.scaleArray.push(curScale);
+  this.scaleArray.push(this.turtle.depth);
   this.turtle.goForward(this.forwardStep);
-
 }
 
 function pushTurtle() {

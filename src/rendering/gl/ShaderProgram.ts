@@ -26,6 +26,8 @@ class ShaderProgram {
   attrCol: number; // This time, it's an instanced rendering attribute, so each particle can have a unique color. Not per-vertex, but per-instance.
   attrTranslate: number; // Used in the vertex shader during instanced rendering to offset the vertex positions to the particle's drawn position.
   attrUV: number;
+  attrForward: number; // forward direction
+  attrDepth: number; // HERE
 
   unifModel: WebGLUniformLocation;
   unifModelInvTr: WebGLUniformLocation;
@@ -52,6 +54,8 @@ class ShaderProgram {
     this.attrCol = gl.getAttribLocation(this.prog, "vs_Col");
     this.attrTranslate = gl.getAttribLocation(this.prog, "vs_Translate");
     this.attrUV = gl.getAttribLocation(this.prog, "vs_UV");
+    this.attrForward = gl.getAttribLocation(this.prog, "vs_Forward");
+    this.attrDepth = gl.getAttribLocation(this.prog, "vs_Depth");
     this.unifModel      = gl.getUniformLocation(this.prog, "u_Model");
     this.unifModelInvTr = gl.getUniformLocation(this.prog, "u_ModelInvTr");
     this.unifViewProj   = gl.getUniformLocation(this.prog, "u_ViewProj");
@@ -130,13 +134,13 @@ class ShaderProgram {
     if (this.attrPos != -1 && d.bindPos()) {
       gl.enableVertexAttribArray(this.attrPos);
       gl.vertexAttribPointer(this.attrPos, 4, gl.FLOAT, false, 0, 0);
-      gl.vertexAttribDivisor(this.attrPos, 0); // Advance 1 index in pos VBO for each vertex
+      gl.vertexAttribDivisor(this.attrPos, 0); // Advance 0 index in pos VBO for each vertex
     }
 
     if (this.attrNor != -1 && d.bindNor()) {
       gl.enableVertexAttribArray(this.attrNor);
       gl.vertexAttribPointer(this.attrNor, 4, gl.FLOAT, false, 0, 0);
-      gl.vertexAttribDivisor(this.attrNor, 0); // Advance 1 index in nor VBO for each vertex
+      gl.vertexAttribDivisor(this.attrNor, 0); // Advance 0 index in nor VBO for each vertex
     }
 
     if (this.attrCol != -1 && d.bindCol()) {
@@ -151,6 +155,8 @@ class ShaderProgram {
       gl.vertexAttribDivisor(this.attrTranslate, 1); // Advance 1 index in translate VBO for each drawn instance
     }
 
+    //if (this.attrForward != -1 && d.bind)
+
     if (this.attrUV != -1 && d.bindUV()) {
       gl.enableVertexAttribArray(this.attrUV);
       gl.vertexAttribPointer(this.attrUV, 2, gl.FLOAT, false, 0, 0);
@@ -158,6 +164,18 @@ class ShaderProgram {
     }
 
     // TODO: Set up attribute data for additional instanced rendering data as needed
+    if (this.attrForward != -1 && d.bindForward) {
+      gl.enableVertexAttribArray(this.attrForward);
+      gl.vertexAttribPointer(this.attrForward, 3, gl.FLOAT, false, 0, 0);
+      gl.vertexAttribDivisor(this.attrForward, 1);
+    }
+
+    if (this.attrDepth != -1 && d.bindDepth) {
+      gl.enableVertexAttribArray(this.attrDepth);
+      gl.vertexAttribPointer(this.attrDepth, 1, gl.FLOAT, false, 0, 0);
+      gl.vertexAttribDivisor(this.attrDepth, 1);
+    }
+
 
     d.bindIdx();
     // drawElementsInstanced uses the vertexAttribDivisor for each "in" variable to
@@ -178,6 +196,9 @@ class ShaderProgram {
     if (this.attrCol != -1) gl.disableVertexAttribArray(this.attrCol);
     if (this.attrTranslate != -1) gl.disableVertexAttribArray(this.attrTranslate);
     if (this.attrUV != -1) gl.disableVertexAttribArray(this.attrUV);
+    
+    if (this.attrForward != -1) gl.disableVertexAttribArray(this.attrForward);
+    if (this.attrDepth != -1) gl.disableVertexAttribArray(this.attrDepth);
   }
 };
 
