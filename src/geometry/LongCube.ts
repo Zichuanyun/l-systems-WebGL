@@ -2,7 +2,7 @@ import {vec3, vec4} from 'gl-matrix';
 import Drawable from '../rendering/gl/Drawable';
 import {gl} from '../globals';
 
-class Square extends Drawable {
+class LongCube extends Drawable {
   indices: Uint32Array;
   positions: Float32Array;
   colors: Float32Array;
@@ -19,17 +19,33 @@ class Square extends Drawable {
   create() {
 
   this.indices = new Uint32Array([0, 1, 2,
-                                  0, 2, 3]);
-  this.positions = new Float32Array([-0.5, -0.5, 0, 1,
-                                     0.5, -0.5, 0, 1,
-                                     0.5, 0.5, 0, 1,
-                                     -0.5, 0.5, 0, 1]);
+                                  2, 1, 3,
+
+                                  2, 3, 4,
+                                  4, 3, 5,
+
+                                  4, 5, 6,
+                                  6, 5, 7,
+
+                                  6, 7, 0,
+                                  0, 7, 1,
+
+                                  1, 7, 3,
+                                  3, 7, 5,
+
+                                  6, 0, 4,
+                                  4, 0, 2]);
 
                                      // HERE
-  this.positions = new Float32Array([-5, -5, 0, 1,
-                                      5, -5, 0, 1,
-                                      5, 5, 0, 1,
-                                      -5, 5, 0, 1]);
+    this.positions = new Float32Array([-0.5, 0, 0.5, 1,
+                                       0.5, 0, 0.5, 1,
+                                       -0.5, 2, 0.5, 1,
+                                       0.5, 2, 0.5, 1,
+
+                                       -0.5, 2, -0.5, 1,
+                                       0.5, 2, -0.5, 1,
+                                       -0.5, 0, -0.5, 1,
+                                       0.5, 0, -0.5, 1]);
 
     this.generateIdx();
     this.generatePos();
@@ -75,4 +91,4 @@ class Square extends Drawable {
   }
 };
 
-export default Square;
+export default LongCube;

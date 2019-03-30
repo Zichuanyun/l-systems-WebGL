@@ -26,8 +26,8 @@ class ShaderProgram {
   attrCol: number; // This time, it's an instanced rendering attribute, so each particle can have a unique color. Not per-vertex, but per-instance.
   attrTranslate: number; // Used in the vertex shader during instanced rendering to offset the vertex positions to the particle's drawn position.
   attrUV: number;
-  attrForward: number; // forward direction
-  attrDepth: number; // HERE
+  attrForward: number; // facing what forward direction
+  attrDepth: number;
 
   unifModel: WebGLUniformLocation;
   unifModelInvTr: WebGLUniformLocation;
@@ -56,6 +56,7 @@ class ShaderProgram {
     this.attrUV = gl.getAttribLocation(this.prog, "vs_UV");
     this.attrForward = gl.getAttribLocation(this.prog, "vs_Forward");
     this.attrDepth = gl.getAttribLocation(this.prog, "vs_Depth");
+
     this.unifModel      = gl.getUniformLocation(this.prog, "u_Model");
     this.unifModelInvTr = gl.getUniformLocation(this.prog, "u_ModelInvTr");
     this.unifViewProj   = gl.getUniformLocation(this.prog, "u_ViewProj");
@@ -64,6 +65,14 @@ class ShaderProgram {
     this.unifEye   = gl.getUniformLocation(this.prog, "u_Eye");
     this.unifRef   = gl.getUniformLocation(this.prog, "u_Ref");
     this.unifUp   = gl.getUniformLocation(this.prog, "u_Up");
+
+    console.log("attrPos: " + this.attrPos);
+    console.log("attrTranslate: " + this.attrTranslate);
+    console.log("attrForward: " + this.attrForward);
+    console.log("attrDepth: " + this.attrDepth);
+    console.log("attrCol: " + this.attrCol);
+    console.log("attrUV: " + this.attrUV);
+
   }
 
   use() {
@@ -146,7 +155,7 @@ class ShaderProgram {
     if (this.attrCol != -1 && d.bindCol()) {
       gl.enableVertexAttribArray(this.attrCol);
       gl.vertexAttribPointer(this.attrCol, 4, gl.FLOAT, false, 0, 0);
-      gl.vertexAttribDivisor(this.attrCol, 1); // Advance 1 index in col VBO for each drawn instance
+      gl.vertexAttribDivisor(this.attrCol, 0); // Advance 1 index in col VBO for each drawn instance
     }
 
     if (this.attrTranslate != -1 && d.bindTranslate()) {
@@ -155,8 +164,6 @@ class ShaderProgram {
       gl.vertexAttribDivisor(this.attrTranslate, 1); // Advance 1 index in translate VBO for each drawn instance
     }
 
-    //if (this.attrForward != -1 && d.bind)
-
     if (this.attrUV != -1 && d.bindUV()) {
       gl.enableVertexAttribArray(this.attrUV);
       gl.vertexAttribPointer(this.attrUV, 2, gl.FLOAT, false, 0, 0);
@@ -164,13 +171,13 @@ class ShaderProgram {
     }
 
     // TODO: Set up attribute data for additional instanced rendering data as needed
-    if (this.attrForward != -1 && d.bindForward) {
+    if (this.attrForward != -1 && d.bindForward()) {
       gl.enableVertexAttribArray(this.attrForward);
       gl.vertexAttribPointer(this.attrForward, 3, gl.FLOAT, false, 0, 0);
       gl.vertexAttribDivisor(this.attrForward, 1);
     }
 
-    if (this.attrDepth != -1 && d.bindDepth) {
+    if (this.attrDepth != -1 && d.bindDepth()) {
       gl.enableVertexAttribArray(this.attrDepth);
       gl.vertexAttribPointer(this.attrDepth, 1, gl.FLOAT, false, 0, 0);
       gl.vertexAttribDivisor(this.attrDepth, 1);

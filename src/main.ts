@@ -3,6 +3,7 @@ import * as Stats from 'stats-js';
 import * as DAT from 'dat-gui';
 import Square from './geometry/Square';
 import ScreenQuad from './geometry/ScreenQuad';
+import LongCube from './geometry/LongCube';
 import OpenGLRenderer from './rendering/gl/OpenGLRenderer';
 import Camera from './Camera';
 import {setGL} from './globals';
@@ -17,38 +18,49 @@ const controls = {
 let square: Square;
 let screenQuad: ScreenQuad;
 let time: number = 0.0;
-let lsystem: LSystem = new LSystem("F-F-F", 3);
+let lsystem: LSystem = new LSystem();
+let longCube: LongCube;
+
 
 function loadScene() {
   square = new Square();
   square.create();
   screenQuad = new ScreenQuad();
   screenQuad.create();
+  longCube = new LongCube();
+  longCube.create();
 
   // Set up instanced rendering data arrays here.
   // This example creates a set of positional
   // offsets and gradiated colors for a 100x100 grid
   // of squares, even though the VBO data for just
   // one square is actually passed to the GPU
-  let offsetsArray = [];
-  let colorsArray = [];
-  let n: number = 100.0;
-  for(let i = 0; i < n; i++) {
-    for(let j = 0; j < n; j++) {
-      offsetsArray.push(i);
-      offsetsArray.push(j);
-      offsetsArray.push(0);
+  // let offsetsArray = [];
+  // let colorsArray = [];
+  // let n: number = 100.0;
+  // for(let i = 0; i < n; i++) {
+  //   for(let j = 0; j < n; j++) {
+  //     offsetsArray.push(i);
+  //     offsetsArray.push(j);
+  //     offsetsArray.push(0);
 
-      colorsArray.push(i / n);
-      colorsArray.push(j / n);
-      colorsArray.push(1.0);
-      colorsArray.push(1.0); // Alpha channel
-    }
-  }
-  let offsets: Float32Array = new Float32Array(offsetsArray);
-  let colors: Float32Array = new Float32Array(colorsArray);
-  square.setInstanceVBOs(offsets, colors);
-  square.setNumInstances(n * n); // grid of "particles"
+  //     colorsArray.push(i / n);
+  //     colorsArray.push(j / n);
+  //     colorsArray.push(1.0);
+  //     colorsArray.push(1.0); // Alpha channel
+  //   }
+  // }
+  // let offsets: Float32Array = new Float32Array(offsetsArray);
+  // let colors: Float32Array = new Float32Array(colorsArray);
+  // square.setInstanceVBOs(offsets, colors);
+  // square.setNumInstances(n * n); // grid of "particles"
+  lsystem.compute();
+  let translates: Float32Array = new Float32Array(lsystem.posArray);
+  let forwards: Float32Array = new Float32Array(lsystem.rotArray);
+  let depths: Float32Array = new Float32Array(lsystem.depthArray);
+  longCube.setInstanceVBOsNew(translates, forwards, depths);
+  longCube.setNumInstances(depths.length);
+  console.log("len: " + depths.length);
 }
 
 function main() {
@@ -76,34 +88,40 @@ function main() {
   // Initial call to load scene
   loadScene();
 
-  const camera = new Camera(vec3.fromValues(50, 50, 10), vec3.fromValues(50, 50, 0));
+  const camera = new Camera(vec3.fromValues(10, 0, 10), vec3.fromValues(0, 0, 0));
 
   const renderer = new OpenGLRenderer(canvas);
   renderer.setClearColor(0.2, 0.2, 0.2, 1);
-  gl.enable(gl.BLEND);
-  gl.blendFunc(gl.ONE, gl.ONE); // Additive blending
+  // gl.enable(gl.BLEND);
+  // gl.blendFunc(gl.ONE, gl.ONE); // Additive blending
+  gl.enable(gl.CULL_FACE);
+  gl.cullFace(gl.BACK);
+  gl.enable(gl.DEPTH_TEST);
+
 
   const instancedShader = new ShaderProgram([
-    new Shader(gl.VERTEX_SHADER, require('./shaders/instanced-vert.glsl')),
+    new Shader(gl.VERTEX_SHADER, require('./shaders/my-instanced-vert.glsl')),
     new Shader(gl.FRAGMENT_SHADER, require('./shaders/instanced-frag.glsl')),
   ]);
 
-  const flat = new ShaderProgram([
-    new Shader(gl.VERTEX_SHADER, require('./shaders/flat-vert.glsl')),
-    new Shader(gl.FRAGMENT_SHADER, require('./shaders/flat-frag.glsl')),
-  ]);
+  // const flat = new ShaderProgram([
+  //   new Shader(gl.VERTEX_SHADER, require('./shaders/flat-vert.glsl')),
+  //   new Shader(gl.FRAGMENT_SHADER, require('./shaders/flat-frag.glsl')),
+  // ]);
 
   // This function will be called every frame
   function tick() {
     camera.update();
+    // console.log(camera.position);
+    // console.log(camera.forward);
     stats.begin();
     instancedShader.setTime(time);
-    flat.setTime(time++);
+    // flat.setTime(time++);
     gl.viewport(0, 0, window.innerWidth, window.innerHeight);
     renderer.clear();
-    renderer.render(camera, flat, [screenQuad]);
+    // renderer.render(camera, flat, [screenQuad]);
     renderer.render(camera, instancedShader, [
-      square,
+      longCube,
     ]);
     stats.end();
 
@@ -115,13 +133,13 @@ function main() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     camera.setAspectRatio(window.innerWidth / window.innerHeight);
     camera.updateProjectionMatrix();
-    flat.setDimensions(window.innerWidth, window.innerHeight);
+    // flat.setDimensions(window.innerWidth, window.innerHeight);
   }, false);
 
   renderer.setSize(window.innerWidth, window.innerHeight);
   camera.setAspectRatio(window.innerWidth / window.innerHeight);
   camera.updateProjectionMatrix();
-  flat.setDimensions(window.innerWidth, window.innerHeight);
+  // flat.setDimensions(window.innerWidth, window.innerHeight);
 
   // Start the render loop
   tick();

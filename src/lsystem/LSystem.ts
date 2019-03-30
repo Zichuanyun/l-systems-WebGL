@@ -7,14 +7,16 @@ import {vec3} from 'gl-matrix';
 class LSystem {
   expansionRule: ExpansionRule = new ExpansionRule();
   drawingRule: DrawingRule = new DrawingRule();
-  initStr: string = 'F-F-F';
-  finalStr: string;
+  initStr: string = 'F';
   iter: number = 3;
-  constructor(str_in: string, iter_in: number) {
-    this.iter = iter_in;
-    this.initStr = str_in;
-    this.expansionRule.addRule('F', '[X]');
-    this.expansionRule.addRule('X', 'F-F');
+  finalStr: string;
+  posArray: Array<number> = new Array();
+  rotArray: Array<number> = new Array();
+  depthArray: Array<number> = new Array();
+
+  constructor() {
+    this.expansionRule.addRule('F', 'FF+[+F-F]-[+F-F]');
+    // this.expansionRule.addRule('X', 'FF+[+F]+[-F]');
     this.compute();
   }
 
@@ -27,16 +29,18 @@ class LSystem {
   }
 
   compute() {
+    // clear before use
+    this.finalStr = "";
     this.finalStr = this.expansionRule.process(this.initStr, this.iter);
     console.log(this.finalStr);
-    // this shuold modify the arrays
-    let posArray: Array<number> = new Array();
-    let rotArray: Array<number> = new Array();
-    let scaleArray: Array<number> = new Array();
-    this.drawingRule.processAndFillArray('[1F2F3]F[3F2F1]', posArray, rotArray, scaleArray);
-    console.log(posArray);
-    console.log(rotArray);
-    console.log(scaleArray);
+    // clean all the arrays first
+    this.posArray.length = 0;
+    this.rotArray.length = 0;
+    this.depthArray.length = 0;
+    this.drawingRule.processAndFillArray(this.finalStr, this.posArray, this.rotArray, this.depthArray);
+    console.log(this.posArray);
+    console.log(this.rotArray);
+    console.log(this.depthArray);
   }
 
 }
