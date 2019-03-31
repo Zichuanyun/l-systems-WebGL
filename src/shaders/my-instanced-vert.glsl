@@ -8,7 +8,7 @@ mat4 constructRotationMat(vec4 quat) {
     float r = quat.w;
     return mat4(
         1.0 - 2.0*(j*j + k*k), 2.0*(i*j + k*r), 2.0*(i*k - j*r), 0.0, // 1st col
-        2.0*(i*j - k*j), 1.0 - 2.0*(i*i + k*k), 2.0*(j*k + i*r), 0.0, // 2nd col
+        2.0*(i*j - k*r), 1.0 - 2.0*(i*i + k*k), 2.0*(j*k + i*r), 0.0, // 2nd col
         2.0*(i*k + j*r), 2.0*(j*k - i*r), 1.0 - 2.0*(i*i + j*j), 0.0, // 3rd col
         0.0, 0.0, 0.0, 1.0
     );

@@ -12,7 +12,7 @@ class DrawingRule {
   stackT: Array<Turtle> = new Array();
 
   rules: Map<string, any> = new Map();
-  forwardStep: number = 3;
+  forwardStep: number = 2;
   xRot: number = 30;
   yRot: number = 30;
   zRot: number = 30;
@@ -33,12 +33,12 @@ class DrawingRule {
 
   processAndFillArray(str: string, posArray_: Array<number>,
     rotArray_: Array<number>, depthArray_: Array<number>) {
-    let dientityMat4: mat4 = mat4.create(); // used to construct a new turtle
-    mat4.identity(dientityMat4);
+    let identityMat4: mat4 = mat4.create(); // used to construct a new turtle
+    mat4.identity(identityMat4);
     this.turtle = new Turtle(
     vec3.fromValues(0.0, 0.0, 0.0),       // pos
     vec4.fromValues(0.0, 1.0, 0.0, 0.0),  // forward
-    dientityMat4,                         // rot mat
+    identityMat4,                         // rot mat
     0);                                   // depth
 
     this.posArray.length = 0;
