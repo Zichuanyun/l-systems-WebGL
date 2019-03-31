@@ -43,8 +43,8 @@ class Turtle {
     mat4.fromRotation(curRotMat, Turtle.R2D * deg, curAixs3);
     // update forward direction
     vec4.transformMat4(this.forward, this.forward, curRotMat);
-    // update member rotation mat
-    mat4.fromRotation(this.rotMat, Turtle.R2D * deg, curAixs3);
+    // update member rotation mat using this transform mat
+    mat4.multiply(this.rotMat, this.rotMat, curRotMat);
   }
 
   rotXDeg(deg: number) {

@@ -1,4 +1,4 @@
-import {vec3, vec4, mat4} from 'gl-matrix';
+import {vec3, vec4, mat4, quat} from 'gl-matrix';
 import Turtle from './Turtle';
 
 
@@ -12,7 +12,7 @@ class DrawingRule {
   stackT: Array<Turtle> = new Array();
 
   rules: Map<string, any> = new Map();
-  forwardStep: number = 2.5;
+  forwardStep: number = 3;
   xRot: number = 30;
   yRot: number = 30;
   zRot: number = 30;
@@ -48,7 +48,7 @@ class DrawingRule {
     
     for (var i = 0; i < str.length; ++i) {
       let curChar: string = str.substring(i, i + 1);
-      console.log("processing: " + curChar);
+      // console.log("processing: " + curChar);
       let func = this.rules.get(curChar);
       if(func) { // Check that the map contains a value for this key
         func();
@@ -85,18 +85,19 @@ function rotZ_() {
 }
 
 function goForward() {
-  // console.log("encounter F");
-  // console.log(this.turtle);
-  // console.log("pos: " + this.turtle.pos);
-  // console.log("forward: " + this.turtle.forward);
 
   this.posArray.push(this.turtle.pos[0]);
   this.posArray.push(this.turtle.pos[1]);
   this.posArray.push(this.turtle.pos[2]);
+  
+  let curRot: quat = quat.create();
+  mat4.getRotation(curRot, this.turtle.rotMat);
+  quat.normalize(curRot, curRot);
 
-  this.rotArray.push(this.turtle.forward[0]);
-  this.rotArray.push(this.turtle.forward[1]);
-  this.rotArray.push(this.turtle.forward[2]);
+  this.rotArray.push(curRot[0]);
+  this.rotArray.push(curRot[1]);
+  this.rotArray.push(curRot[2]);
+  this.rotArray.push(curRot[3]);
 
   this.depthArray.push(this.turtle.depth);
   this.turtle.goForward(this.forwardStep);

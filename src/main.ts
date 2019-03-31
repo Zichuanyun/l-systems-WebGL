@@ -30,37 +30,12 @@ function loadScene() {
   longCube = new LongCube();
   longCube.create();
 
-  // Set up instanced rendering data arrays here.
-  // This example creates a set of positional
-  // offsets and gradiated colors for a 100x100 grid
-  // of squares, even though the VBO data for just
-  // one square is actually passed to the GPU
-  // let offsetsArray = [];
-  // let colorsArray = [];
-  // let n: number = 100.0;
-  // for(let i = 0; i < n; i++) {
-  //   for(let j = 0; j < n; j++) {
-  //     offsetsArray.push(i);
-  //     offsetsArray.push(j);
-  //     offsetsArray.push(0);
-
-  //     colorsArray.push(i / n);
-  //     colorsArray.push(j / n);
-  //     colorsArray.push(1.0);
-  //     colorsArray.push(1.0); // Alpha channel
-  //   }
-  // }
-  // let offsets: Float32Array = new Float32Array(offsetsArray);
-  // let colors: Float32Array = new Float32Array(colorsArray);
-  // square.setInstanceVBOs(offsets, colors);
-  // square.setNumInstances(n * n); // grid of "particles"
   lsystem.compute();
   let translates: Float32Array = new Float32Array(lsystem.posArray);
-  let forwards: Float32Array = new Float32Array(lsystem.rotArray);
+  let rotMats: Float32Array = new Float32Array(lsystem.rotArray);
   let depths: Float32Array = new Float32Array(lsystem.depthArray);
-  longCube.setInstanceVBOsNew(translates, forwards, depths);
+  longCube.setInstanceVBOs(translates, rotMats, depths);
   longCube.setNumInstances(depths.length);
-  console.log("len: " + depths.length);
 }
 
 function main() {
@@ -104,10 +79,10 @@ function main() {
     new Shader(gl.FRAGMENT_SHADER, require('./shaders/instanced-frag.glsl')),
   ]);
 
-  // const flat = new ShaderProgram([
-  //   new Shader(gl.VERTEX_SHADER, require('./shaders/flat-vert.glsl')),
-  //   new Shader(gl.FRAGMENT_SHADER, require('./shaders/flat-frag.glsl')),
-  // ]);
+  const flat = new ShaderProgram([
+    new Shader(gl.VERTEX_SHADER, require('./shaders/flat-vert.glsl')),
+    new Shader(gl.FRAGMENT_SHADER, require('./shaders/flat-frag.glsl')),
+  ]);
 
   // This function will be called every frame
   function tick() {
@@ -116,10 +91,10 @@ function main() {
     // console.log(camera.forward);
     stats.begin();
     instancedShader.setTime(time);
-    // flat.setTime(time++);
+    flat.setTime(time++);
     gl.viewport(0, 0, window.innerWidth, window.innerHeight);
     renderer.clear();
-    // renderer.render(camera, flat, [screenQuad]);
+    renderer.render(camera, flat, [screenQuad]);
     renderer.render(camera, instancedShader, [
       longCube,
     ]);

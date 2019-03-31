@@ -1,7 +1,7 @@
 import Turtle from './Turtle';
 import ExpansionRule from './ExpansionRule';
 import DrawingRule from './DrawingRule';
-import {vec3} from 'gl-matrix';
+import {vec3, quat} from 'gl-matrix';
 
 // arrays to store sacle, pos, rot
 class LSystem {

@@ -13,6 +13,7 @@ abstract class Drawable {
 
   bufDepth: WebGLBuffer;
   bufForward: WebGLBuffer;
+  bufRotQuat: WebGLBuffer;
 
   idxGenerated: boolean = false;
   posGenerated: boolean = false;
@@ -22,6 +23,7 @@ abstract class Drawable {
   uvGenerated: boolean = false;
   depthGenerated: boolean = false;
   forwardGenerated: boolean = false;
+  rotQuatGenerated: boolean = false;
 
 
   numInstances: number = 0; // How many instances of this Drawable the shader program should draw
@@ -37,6 +39,7 @@ abstract class Drawable {
     gl.deleteBuffer(this.bufUV);
     gl.deleteBuffer(this.bufDepth);
     gl.deleteBuffer(this.bufForward);
+    gl.deleteBuffer(this.bufRotQuat);
   }
 
   generateIdx() {
@@ -77,6 +80,11 @@ abstract class Drawable {
   generateDepth() {
     this.depthGenerated = true;
     this.bufDepth = gl.createBuffer();
+  }
+
+  generateRotMat() {
+    this.rotQuatGenerated = true;
+    this.bufRotQuat = gl.createBuffer();
   }
 
   bindIdx(): boolean {
@@ -133,6 +141,13 @@ abstract class Drawable {
       gl.bindBuffer(gl.ARRAY_BUFFER, this.bufDepth);
     }
     return this.depthGenerated;
+  }
+
+  bindRotQuat(): boolean {
+    if (this.rotQuatGenerated) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.bufRotQuat);
+    }
+    return this.rotQuatGenerated;
   }
 
   elemCount(): number {

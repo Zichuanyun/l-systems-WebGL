@@ -28,6 +28,7 @@ class ShaderProgram {
   attrUV: number;
   attrForward: number; // facing what forward direction
   attrDepth: number;
+  attrRotQuat: number; // the whole rotation matrix
 
   unifModel: WebGLUniformLocation;
   unifModelInvTr: WebGLUniformLocation;
@@ -56,6 +57,7 @@ class ShaderProgram {
     this.attrUV = gl.getAttribLocation(this.prog, "vs_UV");
     this.attrForward = gl.getAttribLocation(this.prog, "vs_Forward");
     this.attrDepth = gl.getAttribLocation(this.prog, "vs_Depth");
+    this.attrRotQuat = gl.getAttribLocation(this.prog, "vs_RotQuat");
 
     this.unifModel      = gl.getUniformLocation(this.prog, "u_Model");
     this.unifModelInvTr = gl.getUniformLocation(this.prog, "u_ModelInvTr");
@@ -70,6 +72,8 @@ class ShaderProgram {
     console.log("attrTranslate: " + this.attrTranslate);
     console.log("attrForward: " + this.attrForward);
     console.log("attrDepth: " + this.attrDepth);
+    console.log("attrRotQuat: " + this.attrRotQuat);
+
     console.log("attrCol: " + this.attrCol);
     console.log("attrUV: " + this.attrUV);
 
@@ -158,19 +162,18 @@ class ShaderProgram {
       gl.vertexAttribDivisor(this.attrCol, 0); // Advance 1 index in col VBO for each drawn instance
     }
 
-    if (this.attrTranslate != -1 && d.bindTranslate()) {
-      gl.enableVertexAttribArray(this.attrTranslate);
-      gl.vertexAttribPointer(this.attrTranslate, 3, gl.FLOAT, false, 0, 0);
-      gl.vertexAttribDivisor(this.attrTranslate, 1); // Advance 1 index in translate VBO for each drawn instance
-    }
-
     if (this.attrUV != -1 && d.bindUV()) {
       gl.enableVertexAttribArray(this.attrUV);
       gl.vertexAttribPointer(this.attrUV, 2, gl.FLOAT, false, 0, 0);
       gl.vertexAttribDivisor(this.attrUV, 0); // Advance 1 index in pos VBO for each vertex
     }
 
-    // TODO: Set up attribute data for additional instanced rendering data as needed
+    if (this.attrTranslate != -1 && d.bindTranslate()) {
+      gl.enableVertexAttribArray(this.attrTranslate);
+      gl.vertexAttribPointer(this.attrTranslate, 3, gl.FLOAT, false, 0, 0);
+      gl.vertexAttribDivisor(this.attrTranslate, 1); // Advance 1 index in translate VBO for each drawn instance
+    }
+
     if (this.attrForward != -1 && d.bindForward()) {
       gl.enableVertexAttribArray(this.attrForward);
       gl.vertexAttribPointer(this.attrForward, 3, gl.FLOAT, false, 0, 0);
@@ -183,6 +186,11 @@ class ShaderProgram {
       gl.vertexAttribDivisor(this.attrDepth, 1);
     }
 
+    if (this.attrRotQuat != -1 && d.bindRotQuat()) {
+      gl.enableVertexAttribArray(this.attrRotQuat);
+      gl.vertexAttribPointer(this.attrRotQuat, 4, gl.FLOAT, false, 0, 0);
+      gl.vertexAttribDivisor(this.attrRotQuat, 1);
+    }
 
     d.bindIdx();
     // drawElementsInstanced uses the vertexAttribDivisor for each "in" variable to
@@ -206,6 +214,7 @@ class ShaderProgram {
     
     if (this.attrForward != -1) gl.disableVertexAttribArray(this.attrForward);
     if (this.attrDepth != -1) gl.disableVertexAttribArray(this.attrDepth);
+    if (this.attrRotQuat != -1) gl.disableVertexAttribArray(this.attrRotQuat);
   }
 };
 
