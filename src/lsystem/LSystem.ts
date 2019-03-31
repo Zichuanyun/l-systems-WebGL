@@ -7,22 +7,23 @@ import {vec3, quat} from 'gl-matrix';
 class LSystem {
   expansionRule: ExpansionRule = new ExpansionRule();
   drawingRule: DrawingRule = new DrawingRule();
-  initStr: string = 'F';
-  iter: number = 1;
+  initStr: string = 'FX';
+  iter: number = 3;
   finalStr: string;
   posArray: Array<number> = new Array();
   rotArray: Array<number> = new Array();
   depthArray: Array<number> = new Array();
 
   constructor() {
-    // this.expansionRule.addRule('F', 'FF+[+F-F]-[+F-F]');
+    // this.expansionRule.addRule('F', 'FF<[+F-F]>[,F.F]+[>F<F]-[.F,F]');
     // this.expansionRule.addRule('F', 'FF,[,F.F].[,F.F]');
-    this.expansionRule.addRule('F', 'FF>[+F-F]>[+F-F]');
-
+    // this.expansionRule.addRule('F', 'FF>[+FF]F');
+    // this.expansionRule.addRule('F', 'FF>[+F-F]>[+F-F]');
+    this.expansionRule.addRule('F', 'FF>[+F-F]>[,F.F]+[+F-F]>[.F,F]');
+    this.expansionRule.addRule('X', 'F<<<<[,F.F]+[+F-F]<<<[.F,F]');
 
     // no problem, y axis shouldn't have any effects
     // this.expansionRule.addRule('F', 'FF<[<F>F]>[<F>F]');
-
 
     // this.expansionRule.addRule('X', 'FF+[+F]+[-F]');
     this.compute();
@@ -46,8 +47,8 @@ class LSystem {
     this.rotArray.length = 0;
     this.depthArray.length = 0;
     this.drawingRule.processAndFillArray(this.finalStr, this.posArray, this.rotArray, this.depthArray);
-    console.log(this.posArray);
-    console.log(this.rotArray);
+    // console.log(this.posArray);
+    // console.log(this.rotArray);
     console.log(this.depthArray);
   }
 

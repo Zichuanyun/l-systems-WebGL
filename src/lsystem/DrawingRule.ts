@@ -14,10 +14,9 @@ class DrawingRule {
   rules: Map<string, any> = new Map();
   forwardStep: number = 2;
   xRot: number = 30;
-  yRot: number = 30;
-  zRot: number = 30;
+  yRot: number = 25;
+  zRot: number = 36;
   scalingFactor: number = 0.5;
-  a: number = 0;
 
   constructor() {
     this.rules.set('F', goForward.bind(this));

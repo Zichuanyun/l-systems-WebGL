@@ -44,7 +44,7 @@ class Turtle {
     // update forward direction
     vec4.transformMat4(this.forward, this.forward, curRotMat);
     // update member rotation mat using this transform mat
-    mat4.multiply(this.rotMat, this.rotMat, curRotMat);
+    mat4.multiply(this.rotMat, curRotMat, this.rotMat);
   }
 
   rotXDeg(deg: number) {
@@ -52,7 +52,7 @@ class Turtle {
   }
 
   rotYDeg(deg: number) {
-    this.rotDeg(deg, Turtle.yDir);    
+    this.rotDeg(deg, Turtle.yDir); 
   }
 
   rotZDeg(deg: number) {
