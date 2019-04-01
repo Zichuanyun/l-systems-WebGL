@@ -5,6 +5,7 @@ uniform vec3 u_Eye, u_Ref, u_Up;
 uniform vec2 u_Dimensions;
 uniform float u_Time;
 
+// -1 to 1
 in vec2 fs_Pos;
 out vec4 out_Col;
 
@@ -88,16 +89,22 @@ float multiFBM(vec2 p) {
 void main()
 {
     // Normalized pixel coordinates (from 0 to 1)
-    vec2 uv = fs_Pos / u_Dimensions.xx; 
-    uv = vec2(fs_Pos);
+    // vec2 uv = fs_Pos / (u_Dimensions.yy / u_Dimensions.xx); 
+    vec2 uv = 0.5 * (fs_Pos + vec2(1.0));
+    uv = vec2(uv.x, uv.y * (u_Dimensions.y/u_Dimensions.x));
 
     // Time varying pixel color
-    vec3 col = vec3(layerValueNoise(8, uv * 8.0));
-    col = vec3(layerGradientNoise(8, uv * 8.0));
-    col = vec3(multiFBM(uv * 8.0));
+    float val = multiFBM(uv * 10.0);
+    float r = val;
+    float g = 1.0 - val;
+    float b = mix(r, g, val);
+
+
+
+    vec3 col = mix(vec3(b, g, r), vec3(0.0), val);
 
     // Output to screen
     out_Col = vec4(col, 1.0);
-    // out_Col = vec4(fs_Pos.x);
+    // out_Col = vec4(uv, 1.0, 1.0);
     // out_Col = vec4(0.5 * (fs_Pos + vec2(1.0)), 0.0, 1.0);
 }

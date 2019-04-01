@@ -160,6 +160,10 @@ function main() {
     camera.setAspectRatio(window.innerWidth / window.innerHeight);
     camera.updateProjectionMatrix();
     flat.setDimensions(window.innerWidth, window.innerHeight);
+    console.log(window.innerWidth);
+    console.log(window.innerHeight);
+    console.log(window.innerHeight / window.innerWidth);
+
   }, false);
 
   renderer.setSize(window.innerWidth, window.innerHeight);
