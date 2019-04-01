@@ -4,18 +4,28 @@ import Turtle from './Turtle';
 
 
 class DrawingRule {
-
   posArray: Array<number> = new Array();
   rotArray: Array<number> = new Array();
   depthArray: Array<number> = new Array();
+
+  fPosArray: Array<number> = new Array();
+  fRotArray: Array<number> = new Array();
+  fDepthArray: Array<number> = new Array();
+
   turtle: Turtle; 
   stackT: Array<Turtle> = new Array();
 
   rules: Map<string, any> = new Map();
   forwardStep: number = 2;
   xRot: number = 30;
-  yRot: number = 25;
+  xRotRandom: number = 5;
+
+  yRot: number = 5;
+  yRotRandom: number = 5;
+
   zRot: number = 36;
+  zRotRandom: number = 5;
+
   scalingFactor: number = 0.5;
 
   constructor() {
@@ -28,6 +38,7 @@ class DrawingRule {
     this.rules.set('>', rotY_.bind(this));
     this.rules.set(',', rotZ.bind(this));
     this.rules.set('.', rotZ_.bind(this));
+    this.rules.set('*', addFlower.bind(this));
   }
 
   processAndFillArray(str: string, posArray_: Array<number>,
@@ -40,9 +51,15 @@ class DrawingRule {
     identityMat4,                         // rot mat
     0);                                   // depth
 
+    // branches
     this.posArray.length = 0;
     this.rotArray.length = 0;
     this.depthArray.length = 0;
+    // flowers
+    this.fPosArray.length = 0;
+    this.fRotArray.length = 0;
+    this.fDepthArray.length = 0;
+    // stack
     this.stackT.length = 0;
     
     for (var i = 0; i < str.length; ++i) {
@@ -60,27 +77,48 @@ class DrawingRule {
 }
 
 function rotX() {
-  this.turtle.rotXDeg(this.xRot);
+  this.turtle.rotXDeg(this.xRot + getRandRange(this.xRotRandom));
 }
 
 function rotX_() {
-  this.turtle.rotXDeg(-this.xRot);
+  this.turtle.rotXDeg(-this.xRot + getRandRange(this.xRotRandom));
 }
 
 function rotY() {
-  this.turtle.rotYDeg(this.yRot);
+  this.turtle.rotYDeg(this.yRot) + getRandRange(this.yRotRandom);
 }
 
 function rotY_() {
-  this.turtle.rotYDeg(-this.yRot);
+  this.turtle.rotYDeg(-this.yRot + getRandRange(this.yRotRandom));
 }
 
 function rotZ() {
-  this.turtle.rotZDeg(this.zRot);
+  this.turtle.rotZDeg(this.zRot + getRandRange(this.zRotRandom));
 }
 
 function rotZ_() {
-  this.turtle.rotZDeg(-this.zRot);
+  this.turtle.rotZDeg(-this.zRot + getRandRange(this.zRotRandom));
+}
+
+function getRandRange(rand: number): number {
+  return 2 * Math.random() * rand - rand;
+}
+
+function addFlower() {
+  this.fPosArray.push(this.turtle.pos[0]);
+  this.fPosArray.push(this.turtle.pos[1]);
+  this.fPosArray.push(this.turtle.pos[2]);
+  
+  let curRot: quat = quat.create();
+  mat4.getRotation(curRot, this.turtle.rotMat);
+  quat.normalize(curRot, curRot);
+
+  this.fRotArray.push(curRot[0]);
+  this.fRotArray.push(curRot[1]);
+  this.fRotArray.push(curRot[2]);
+  this.fRotArray.push(curRot[3]);
+
+  this.fDepthArray.push(this.turtle.depth);
 }
 
 function goForward() {

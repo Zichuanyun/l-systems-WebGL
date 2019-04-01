@@ -6,21 +6,44 @@ import ScreenQuad from './geometry/ScreenQuad';
 import LongCube from './geometry/LongCube';
 import OpenGLRenderer from './rendering/gl/OpenGLRenderer';
 import Camera from './Camera';
-import {setGL} from './globals';
+import {setGL, cylinderString} from './globals';
 import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
 import LSystem from './lsystem/LSystem'
-
-// Define an object with application parameters and button callbacks
-// This will be referred to by dat.GUI's functions that add GUI elements.
-const controls = {
-};
+import Mesh from './geometry/Mesh';
 
 let square: Square;
 let screenQuad: ScreenQuad;
 let time: number = 0.0;
 let lsystem: LSystem = new LSystem();
 let longCube: LongCube;
+let branchCylinder: Mesh;
 
+function guiChangeCallback() {
+  console.log("gui changed!");
+  lsystem.setIter(controls['Number of iteration']);
+
+  lsystem.drawingRule.xRot = controls['X axis base rotation'];
+  lsystem.drawingRule.xRotRandom = controls['X axis random'];
+
+  lsystem.drawingRule.yRot = controls['Y axis base rotation'];
+  lsystem.drawingRule.yRotRandom = controls['Y axis random'];
+
+  lsystem.drawingRule.zRot = controls['Z axis base rotation'];
+  lsystem.drawingRule.zRotRandom = controls['Z axis random'];
+
+  lsystem.compute();
+  updateBuffer();
+}
+
+const controls = {
+  'Number of iteration': 3,
+  'X axis base rotation': 20,
+  'X axis random': 4,
+  'Y axis base rotation': 5,
+  'Y axis random': 0,
+  'Z axis base rotation': 30,
+  'Z axis random': 5,
+};
 
 function loadScene() {
   square = new Square();
@@ -29,13 +52,20 @@ function loadScene() {
   screenQuad.create();
   longCube = new LongCube();
   longCube.create();
+  branchCylinder = new Mesh(cylinderString, vec3.fromValues(0, 0, 0));
+  branchCylinder.create();
+  guiChangeCallback(); // lsystem compute here
+  updateBuffer();
+}
 
-  lsystem.compute();
+function updateBuffer() {
   let translates: Float32Array = new Float32Array(lsystem.posArray);
   let rotMats: Float32Array = new Float32Array(lsystem.rotArray);
   let depths: Float32Array = new Float32Array(lsystem.depthArray);
-  longCube.setInstanceVBOs(translates, rotMats, depths);
-  longCube.setNumInstances(depths.length);
+  // longCube.setInstanceVBOs(translates, rotMats, depths);
+  // longCube.setNumInstances(depths.length);
+  branchCylinder.setInstanceVBOs(translates, rotMats, depths);
+  branchCylinder.setNumInstances(depths.length);
 }
 
 function main() {
@@ -49,6 +79,14 @@ function main() {
 
   // Add controls to the gui
   const gui = new DAT.GUI();
+
+  gui.add(controls, 'Number of iteration', 1, 4).step(1).onFinishChange(guiChangeCallback);
+  gui.add(controls, 'X axis base rotation', 0, 180).step(0.5).onFinishChange(guiChangeCallback);
+  gui.add(controls, 'X axis random', 0, 90).step(0.5).onFinishChange(guiChangeCallback);  
+  gui.add(controls, 'Y axis base rotation', 0, 180).step(0.5).onFinishChange(guiChangeCallback);
+  gui.add(controls, 'Y axis random', 0, 90).step(0.5).onFinishChange(guiChangeCallback);  
+  gui.add(controls, 'Z axis base rotation', 0, 180).step(0.5).onFinishChange(guiChangeCallback);
+  gui.add(controls, 'Z axis random', 0, 90).step(0.5).onFinishChange(guiChangeCallback);  
 
   // get canvas and webgl context
   const canvas = <HTMLCanvasElement> document.getElementById('canvas');
@@ -69,8 +107,8 @@ function main() {
   renderer.setClearColor(0.2, 0.2, 0.2, 1);
   // gl.enable(gl.BLEND);
   // gl.blendFunc(gl.ONE, gl.ONE); // Additive blending
-  gl.enable(gl.CULL_FACE);
-  gl.cullFace(gl.BACK);
+  // gl.enable(gl.CULL_FACE);
+  // gl.cullFace(gl.BACK);
   gl.enable(gl.DEPTH_TEST);
 
 
@@ -96,7 +134,7 @@ function main() {
     renderer.clear();
     renderer.render(camera, flat, [screenQuad]);
     renderer.render(camera, instancedShader, [
-      longCube,
+      branchCylinder,
     ]);
     stats.end();
 

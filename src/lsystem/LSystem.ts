@@ -19,12 +19,11 @@ class LSystem {
     // this.expansionRule.addRule('F', 'FF,[,F.F].[,F.F]');
     // this.expansionRule.addRule('F', 'FF>[+FF]F');
     // this.expansionRule.addRule('F', 'FF>[+F-F]>[+F-F]');
-    this.expansionRule.addRule('F', 'FF>[+F-F]>[,F.F]+[+F-F]>[.F,F]');
-    this.expansionRule.addRule('X', 'F<<<<[,F.F]+[+F-F]<<<[.F,F]');
+    this.expansionRule.addRule('F', 'FF>[+F-F*]>[,F.F*]+[+F-F]>[.F,F]>');
+    this.expansionRule.addRule('X', 'F<<<<[,F.F]+[+F-F]<<<[.F,F]<<<');
 
     // no problem, y axis shouldn't have any effects
     // this.expansionRule.addRule('F', 'FF<[<F>F]>[<F>F]');
-
     // this.expansionRule.addRule('X', 'FF+[+F]+[-F]');
     this.compute();
   }
@@ -49,9 +48,8 @@ class LSystem {
     this.drawingRule.processAndFillArray(this.finalStr, this.posArray, this.rotArray, this.depthArray);
     // console.log(this.posArray);
     // console.log(this.rotArray);
-    console.log(this.depthArray);
+    // console.log(this.depthArray);
   }
-
 }
 
 export default LSystem;

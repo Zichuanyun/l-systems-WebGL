@@ -1,10 +1,6 @@
+# This file uses centimeters as units for non-parametric coordinates.
 
-export var gl: WebGL2RenderingContext;
-export function setGL(_gl: WebGL2RenderingContext) {
-  gl = _gl;
-}
-export let cylinderString: string = 
-`
+mtllib maya_cylinder.mtl
 g default
 v 0.000000 0.000000 -1.000000
 v 0.195090 0.000000 -0.980785
@@ -395,4 +391,3 @@ f 31/62/181 63/61/182 64/63/183
 f 31/62/184 64/63/185 32/64/186
 f 33/2/187 1/1/188 32/65/189
 f 33/2/190 32/65/191 64/66/192
-`;

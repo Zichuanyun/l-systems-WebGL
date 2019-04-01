@@ -1,4 +1,5 @@
 #version 300 es
+#define TAPER_FACTOR 0.5
 
 // begin util funcs =================================================
 mat4 constructRotationMat(vec4 quat) {
@@ -53,10 +54,11 @@ out vec4 fs_Pos;
 void main()
 {
     fs_Col = vec4(vec3(vs_Depth * 0.3), 1.0);
+    float taper = pow(TAPER_FACTOR, vs_Depth);
     mat4 transformMat = constructTransformationMat(
         vs_Translate,
         vs_RotQuat,
-        vec3(0.3, 1.0, 0.3)
+        vec3(0.3 * taper, 2.0, 0.3 * taper)
     );
     vec4 worldPos = transformMat * vs_Pos;
     gl_Position = u_ViewProj * worldPos;
