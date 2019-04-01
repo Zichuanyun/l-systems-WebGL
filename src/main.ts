@@ -62,10 +62,15 @@ function updateBuffer() {
   let translates: Float32Array = new Float32Array(lsystem.posArray);
   let rotMats: Float32Array = new Float32Array(lsystem.rotArray);
   let depths: Float32Array = new Float32Array(lsystem.depthArray);
-  // longCube.setInstanceVBOs(translates, rotMats, depths);
-  // longCube.setNumInstances(depths.length);
   branchCylinder.setInstanceVBOs(translates, rotMats, depths);
   branchCylinder.setNumInstances(depths.length);
+
+  let fTranslates: Float32Array = new Float32Array(lsystem.fPosArray);
+  let fRotMats: Float32Array = new Float32Array(lsystem.fRotArray);
+  let fDepths: Float32Array = new Float32Array(lsystem.fDepthArray);
+  longCube.setInstanceVBOs(fTranslates, fRotMats, fDepths);
+  longCube.setNumInstances(fDepths.length);
+  console.log(fDepths.length);
 }
 
 function main() {
@@ -117,6 +122,11 @@ function main() {
     new Shader(gl.FRAGMENT_SHADER, require('./shaders/instanced-frag.glsl')),
   ]);
 
+  const instancedFlowerShader = new ShaderProgram([
+    new Shader(gl.VERTEX_SHADER, require('./shaders/my-flower-instanced-vert.glsl')),
+    new Shader(gl.FRAGMENT_SHADER, require('./shaders/instanced-frag.glsl')),
+  ]);
+
   const flat = new ShaderProgram([
     new Shader(gl.VERTEX_SHADER, require('./shaders/flat-vert.glsl')),
     new Shader(gl.FRAGMENT_SHADER, require('./shaders/flat-frag.glsl')),
@@ -133,9 +143,12 @@ function main() {
     gl.viewport(0, 0, window.innerWidth, window.innerHeight);
     renderer.clear();
     renderer.render(camera, flat, [screenQuad]);
-    renderer.render(camera, instancedShader, [
-      branchCylinder,
-    ]);
+    // renderer.render(camera, instancedShader, [
+    //   branchCylinder,
+    // ]);
+    // renderer.render(camera, instancedFlowerShader, [
+    //   longCube,
+    // ]);
     stats.end();
 
     // Tell the browser to call `tick` again whenever it renders a new frame
@@ -146,13 +159,13 @@ function main() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     camera.setAspectRatio(window.innerWidth / window.innerHeight);
     camera.updateProjectionMatrix();
-    // flat.setDimensions(window.innerWidth, window.innerHeight);
+    flat.setDimensions(window.innerWidth, window.innerHeight);
   }, false);
 
   renderer.setSize(window.innerWidth, window.innerHeight);
   camera.setAspectRatio(window.innerWidth / window.innerHeight);
   camera.updateProjectionMatrix();
-  // flat.setDimensions(window.innerWidth, window.innerHeight);
+  flat.setDimensions(window.innerWidth, window.innerHeight);
 
   // Start the render loop
   tick();

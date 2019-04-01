@@ -14,6 +14,10 @@ class LSystem {
   rotArray: Array<number> = new Array();
   depthArray: Array<number> = new Array();
 
+  fPosArray: Array<number> = new Array();
+  fRotArray: Array<number> = new Array();
+  fDepthArray: Array<number> = new Array();
+
   constructor() {
     // this.expansionRule.addRule('F', 'FF<[+F-F]>[,F.F]+[>F<F]-[.F,F]');
     // this.expansionRule.addRule('F', 'FF,[,F.F].[,F.F]');
@@ -42,13 +46,25 @@ class LSystem {
     this.finalStr = this.expansionRule.process(this.initStr, this.iter);
     // console.log(this.finalStr);
     // clean all the arrays first
+    // clear branch
     this.posArray.length = 0;
     this.rotArray.length = 0;
     this.depthArray.length = 0;
-    this.drawingRule.processAndFillArray(this.finalStr, this.posArray, this.rotArray, this.depthArray);
+    // clear flower
+    this.fPosArray.length = 0;
+    this.fRotArray.length = 0;
+    this.fDepthArray.length = 0;
+
+    this.drawingRule.processAndFillArray(this.finalStr,
+      this.posArray, this.rotArray, this.depthArray,
+      this.fPosArray, this.fRotArray, this.fDepthArray);
     // console.log(this.posArray);
     // console.log(this.rotArray);
     // console.log(this.depthArray);
+
+    console.log(this.fPosArray);
+    console.log(this.fRotArray);
+    console.log(this.fDepthArray);
   }
 }
 

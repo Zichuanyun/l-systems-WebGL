@@ -41,8 +41,13 @@ class DrawingRule {
     this.rules.set('*', addFlower.bind(this));
   }
 
-  processAndFillArray(str: string, posArray_: Array<number>,
-    rotArray_: Array<number>, depthArray_: Array<number>) {
+  processAndFillArray(str: string,
+    posArray_: Array<number>,
+    rotArray_: Array<number>,
+    depthArray_: Array<number>,
+    fPosArray_: Array<number>,
+    fRotArray_: Array<number>,
+    fDepthArray_: Array<number>) {
     let identityMat4: mat4 = mat4.create(); // used to construct a new turtle
     mat4.identity(identityMat4);
     this.turtle = new Turtle(
@@ -70,9 +75,14 @@ class DrawingRule {
         func();
       }
     }
+    // branches
     posArray_.push.apply(posArray_, this.posArray);
     rotArray_.push.apply(rotArray_, this.rotArray);
     depthArray_.push.apply(depthArray_,this.depthArray);
+    // flowers
+    fPosArray_.push.apply(fPosArray_, this.fPosArray);
+    fRotArray_.push.apply(fRotArray_, this.fRotArray);
+    fDepthArray_.push.apply(fDepthArray_, this.fDepthArray);
   }
 }
 

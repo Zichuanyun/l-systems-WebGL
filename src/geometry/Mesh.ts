@@ -34,11 +34,13 @@ class Mesh extends Drawable {
     //posTemp = loadedMesh.vertices;
     for (var i = 0; i < loadedMesh.vertices.length; i++) {
       posTemp.push(loadedMesh.vertices[i]);
+      // loadedMesh only has v3 pos, so push 1.0
       if (i % 3 == 2) posTemp.push(1.0);
     }
 
     for (var i = 0; i < loadedMesh.vertexNormals.length; i++) {
       norTemp.push(loadedMesh.vertexNormals[i]);
+      // loadedMesh only has v3 normal, so push 1.0
       if (i % 3 == 2) norTemp.push(0.0);
     }
 
