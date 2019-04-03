@@ -1,7 +1,7 @@
 # CIS566 Project L-system
 
 ![](./result.png)
-[Live Demo Link]
+[Live Demo Link](https://zichuanyun.github.io/l-systems-WebGL/index.html)
 
 ## Intro
 
