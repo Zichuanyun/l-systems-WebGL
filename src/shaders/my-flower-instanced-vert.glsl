@@ -47,9 +47,11 @@ in vec4 vs_Pos; // Non-instanced; each particle is the same quad drawn in a diff
 in vec3 vs_Translate; // Another instance rendering attribute used to position each quad instance in the scene
 in float vs_Depth;
 in vec4 vs_RotQuat;
+in vec4 vs_Normal;
 
 out vec4 fs_Col;
 out vec4 fs_Pos;
+out vec4 fs_Normal;
 
 void main()
 {
@@ -57,9 +59,11 @@ void main()
     mat4 transformMat = constructTransformationMat(
         vs_Translate,
         vs_RotQuat,
-        vec3(1.0, 0.5, 1.0)
+        vec3(0.0007)
     );
     vec4 worldPos = transformMat * vs_Pos;
+    fs_Normal = transformMat * vs_Normal;
+    fs_Normal = vs_Normal;
     gl_Position = u_ViewProj * worldPos;
     fs_Pos = gl_Position;
 }

@@ -40,9 +40,13 @@ class Mesh extends Drawable {
 
     for (var i = 0; i < loadedMesh.vertexNormals.length; i++) {
       norTemp.push(loadedMesh.vertexNormals[i]);
-      // loadedMesh only has v3 normal, so push 1.0
+      // loadedMesh only has v3 normal, so push 0.0
       if (i % 3 == 2) norTemp.push(0.0);
     }
+
+    // for (var i = 0; i < norTemp.length; i = i + 4) {
+    //   console.log(norTemp[i] + " " + norTemp[i+1] + " " + norTemp[i+2] + " " + norTemp[i+3]);
+    // }
 
     uvsTemp = loadedMesh.textures;
     idxTemp = loadedMesh.indices;

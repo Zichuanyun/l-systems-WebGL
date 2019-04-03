@@ -101,7 +101,7 @@ void main()
 
 
 
-    vec3 col = mix(vec3(b, g, r), vec3(0.0), val);
+    vec3 col = mix(vec3(g, b, r), vec3(0.0), val);
 
     // Output to screen
     out_Col = vec4(col, 1.0);

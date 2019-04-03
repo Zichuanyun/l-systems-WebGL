@@ -6,7 +6,7 @@ import ScreenQuad from './geometry/ScreenQuad';
 import LongCube from './geometry/LongCube';
 import OpenGLRenderer from './rendering/gl/OpenGLRenderer';
 import Camera from './Camera';
-import {setGL, cylinderString} from './globals';
+import {setGL, cylinderString, skullString} from './globals';
 import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
 import LSystem from './lsystem/LSystem'
 import Mesh from './geometry/Mesh';
@@ -17,6 +17,7 @@ let time: number = 0.0;
 let lsystem: LSystem = new LSystem();
 let longCube: LongCube;
 let branchCylinder: Mesh;
+let skullMesh: Mesh;
 
 function guiChangeCallback() {
   console.log("gui changed!");
@@ -54,6 +55,8 @@ function loadScene() {
   longCube.create();
   branchCylinder = new Mesh(cylinderString, vec3.fromValues(0, 0, 0));
   branchCylinder.create();
+  skullMesh = new Mesh(skullString, vec3.fromValues(0, 0, 0));
+  skullMesh.create();
   guiChangeCallback(); // lsystem compute here
   updateBuffer();
 }
@@ -68,8 +71,8 @@ function updateBuffer() {
   let fTranslates: Float32Array = new Float32Array(lsystem.fPosArray);
   let fRotMats: Float32Array = new Float32Array(lsystem.fRotArray);
   let fDepths: Float32Array = new Float32Array(lsystem.fDepthArray);
-  longCube.setInstanceVBOs(fTranslates, fRotMats, fDepths);
-  longCube.setNumInstances(fDepths.length);
+  skullMesh.setInstanceVBOs(fTranslates, fRotMats, fDepths);
+  skullMesh.setNumInstances(fDepths.length);
   console.log(fDepths.length);
 }
 
@@ -88,7 +91,7 @@ function main() {
   gui.add(controls, 'Number of iteration', 1, 4).step(1).onFinishChange(guiChangeCallback);
   gui.add(controls, 'X axis base rotation', 0, 180).step(0.5).onFinishChange(guiChangeCallback);
   gui.add(controls, 'X axis random', 0, 90).step(0.5).onFinishChange(guiChangeCallback);  
-  gui.add(controls, 'Y axis base rotation', 0, 180).step(0.5).onFinishChange(guiChangeCallback);
+  gui.add(controls, 'Y axis base rotation', -90, 90).step(0.5).onFinishChange(guiChangeCallback);
   gui.add(controls, 'Y axis random', 0, 90).step(0.5).onFinishChange(guiChangeCallback);  
   gui.add(controls, 'Z axis base rotation', 0, 180).step(0.5).onFinishChange(guiChangeCallback);
   gui.add(controls, 'Z axis random', 0, 90).step(0.5).onFinishChange(guiChangeCallback);  
@@ -124,7 +127,7 @@ function main() {
 
   const instancedFlowerShader = new ShaderProgram([
     new Shader(gl.VERTEX_SHADER, require('./shaders/my-flower-instanced-vert.glsl')),
-    new Shader(gl.FRAGMENT_SHADER, require('./shaders/instanced-frag.glsl')),
+    new Shader(gl.FRAGMENT_SHADER, require('./shaders/lambert-frag.glsl')),
   ]);
 
   const flat = new ShaderProgram([
@@ -143,12 +146,12 @@ function main() {
     gl.viewport(0, 0, window.innerWidth, window.innerHeight);
     renderer.clear();
     renderer.render(camera, flat, [screenQuad]);
-    // renderer.render(camera, instancedShader, [
-    //   branchCylinder,
-    // ]);
-    // renderer.render(camera, instancedFlowerShader, [
-    //   longCube,
-    // ]);
+    renderer.render(camera, instancedShader, [
+      branchCylinder,
+    ]);
+    renderer.render(camera, instancedFlowerShader, [
+      skullMesh,
+    ]);
     stats.end();
 
     // Tell the browser to call `tick` again whenever it renders a new frame
